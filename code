@@ -1,0 +1,45 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+def logistic_growth(t, P0, K, r):
+    A = K / P0 - 1
+    return K / (1 + A * np.exp(-r * t))
+
+def logistic_derivative(t, P, r, K):
+    return r * P * (1 - P/K)
+
+# Obtener los valores necesarios
+P0 = 160
+K = 5000
+r = 2.254
+
+# Definir la malla de puntos en el espacio (t, P)
+t_values = np.linspace(0, 10, 20)
+P_values = np.linspace(0, K, 20)
+t_mesh, P_mesh = np.meshgrid(t_values, P_values)
+
+# Calcular las derivadas en cada punto de la malla
+dt_dt = np.ones_like(t_mesh)
+dP_dt = logistic_derivative(t_mesh, P_mesh, r, K)
+
+# Normalizar las derivadas para escalar los vectores
+norm = np.sqrt(dt_dt**2 + dP_dt**2)
+dt_dt /= norm
+dP_dt /= norm
+
+# Graficar el campo vectorial
+plt.figure(figsize=(8, 6))
+plt.quiver(t_mesh, P_mesh, dt_dt, dP_dt)
+plt.xlabel('Tiempo')
+plt.ylabel('Población')
+plt.title('Campo vectorial de la ecuación logística')
+
+# Calcular la solución de la ecuación diferencial logística
+t = np.linspace(0, 10, 100)
+population = logistic_growth(t, P0, K, r)
+
+# Graficar la solución
+plt.plot(t, population, label='Función logística')
+plt.legend()
+plt.grid(True)
+plt.show()
